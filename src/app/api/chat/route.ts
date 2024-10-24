@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   return result.toDataStreamResponse();
 }
 
-function selectModel(modelDetails) : LanguageModelV1 {
+function selectModel(modelDetails: {modelFamily: string, modelName: string}) : LanguageModelV1 {
   let model = openai('gpt-3.5-turbo');
   if(modelDetails.modelFamily.toLowerCase() === 'anthropic') model = anthropic(modelDetails.modelName);
   else if(modelDetails.modelFamily.toLowerCase() === 'openai') model = openai(modelDetails.modelName);
