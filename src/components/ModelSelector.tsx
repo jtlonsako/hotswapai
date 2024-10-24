@@ -4,7 +4,6 @@ import {
     PopoverContent,
     PopoverTrigger
  } from "@radix-ui/react-popover";
-import { Card } from "./ui/card";
 import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 import { type CarouselApi } from "@/components/ui/carousel"
 import { Button } from "./ui/button";
@@ -55,7 +54,7 @@ const modelDetails = {
 export function ModelSelector({modelFamily, displayName,  modelName, setModelFamily, setDisplayName, setModelName}) {
     const [api, setApi] = useState<CarouselApi>();
 
-    let modelNameList = modelDetails[modelFamily].map((model) => {
+    const modelNameList = modelDetails[modelFamily].map((model) => {
             return(
                     <li key={model.modelName}>
                         {model.modelName === modelName ? (
@@ -72,7 +71,7 @@ export function ModelSelector({modelFamily, displayName,  modelName, setModelFam
             )
     })
 
-    let modelFamilyList = createModelFamilyList();
+    const modelFamilyList = createModelFamilyList();
 
     useEffect(() => {
         setModelName(modelDetails[modelFamily][0].modelName)
@@ -93,8 +92,8 @@ export function ModelSelector({modelFamily, displayName,  modelName, setModelFam
     }
 
     function createModelFamilyList() {
-        let modelFamilyList = []
-        for(let key in modelDetails) {
+        const modelFamilyList = []
+        for(const key in modelDetails) {
             modelFamilyList.push(
                 <li key={key}>
                     {key === modelFamily ? (

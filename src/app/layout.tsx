@@ -4,7 +4,6 @@ import {
   SignInButton,
   SignedIn,
   SignedOut,
-  UserButton
 } from '@clerk/nextjs'
 import localFont from "next/font/local";
 import "./globals.css";

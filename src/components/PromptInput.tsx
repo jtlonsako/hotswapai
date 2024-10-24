@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import type { SVGProps } from 'react';
 
-let keyMap = {}
+const keyMap = {}
 export function PromptInput({handleSubmit, handleInputChange, input}) {
 
         // Handle key down event

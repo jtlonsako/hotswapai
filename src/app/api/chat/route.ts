@@ -1,8 +1,8 @@
 import { openai } from '@ai-sdk/openai';
 import { anthropic } from '@ai-sdk/anthropic'
 import { google } from '@ai-sdk/google';
-import { streamText, convertToCoreMessages, tool, LanguageModelV1 } from 'ai';
-import { z } from 'zod';
+import { streamText, convertToCoreMessages, LanguageModelV1 } from 'ai';
+// import { z } from 'zod';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
