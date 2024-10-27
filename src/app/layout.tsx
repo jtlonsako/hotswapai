@@ -32,24 +32,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#2b2b2b]`}
         >
         <SidebarProvider>
           <AppSidebar />
-            <SidebarTrigger className="z-20" />
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-            <SignedIn>
-              {children}
-            </SignedIn>
-            
+          <SidebarTrigger className="z-20" />
+          {children}
         </SidebarProvider>
           </body>
       </html>
-    </ClerkProvider>
   );
 }

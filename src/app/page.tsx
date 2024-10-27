@@ -36,9 +36,7 @@ export default function Chat() {
             setModelFamily={setModelFamily}
           />
         </div>
-        <div className="justify-end h-fit border border-zinc-400 grid rounded-lg text-white mt-4 md:mr-10">
-          <SignOutButton className="h-full w-full p-4 hover:bg-red-400 transition-colors rounded-lg" />
-        </div>
+
       </div>
       <div className="flex flex-col w-full max-w-xl mx-auto py-24 stretch">
         {messages.map(m => (
