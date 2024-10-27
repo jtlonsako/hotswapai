@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { SignOutButton } from '@clerk/nextjs';
 import { useChat } from 'ai/react';
@@ -11,19 +11,21 @@ export default function Chat() {
   const [modelName, setModelName] = useState('claude-3-haiku-20240307');
   const [displayName, setDisplayName] = useState('Claude-3.5 Haiku ($)')
   const [modelFamily, setModelFamily] = useState('Anthropic');
+  const conversationId = useRef(-1);
 
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     body: {
       modelData: {
         modelFamily: modelFamily,
-        modelName: modelName
+        modelName: modelName,
+        conversationId: conversationId
       }
     }
   });
 
   return (
     <>
-      <div className='fixed w-full bg-[#2b2b2b] md:h-24 pb-2 h-fit flex'>
+      <div className='fixed w-full md:h-24 pb-2 h-fit flex'>
         <div className="sm:ml-10 md:mt-4 mt-2 flex-1">
           <ModelSelector
             modelName={modelName}
@@ -47,8 +49,8 @@ export default function Chat() {
         ))}
 
       </div>
-      <div id="footer" className="fixed bottom-0 min-h-24 h-auto w-full flex justify-center items-end bg-[#2b2b2b]">
-        <PromptInput handleSubmit={handleSubmit} handleInputChange={handleInputChange} input={input} />
+      <div id="footer" className="fixed bottom-0 min-h-24 h-auto w-full flex justify-center items-end">
+        <PromptInput handleSubmit={handleSubmit} handleInputChange={handleInputChange} input={input} modelName={modelName} conversationId={conversationId} />
       </div>
     </>
   );

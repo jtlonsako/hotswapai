@@ -7,6 +7,8 @@ import {
 } from '@clerk/nextjs'
 import localFont from "next/font/local";
 import "./globals.css";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,15 +35,20 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#2b2b2b]`}
         >
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            {children}
-          </SignedIn>
-        </body>
+        <SidebarProvider>
+          <AppSidebar />
+            <SidebarTrigger className="z-20" />
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+            <SignedIn>
+              {children}
+            </SignedIn>
+            
+        </SidebarProvider>
+          </body>
       </html>
     </ClerkProvider>
   );
