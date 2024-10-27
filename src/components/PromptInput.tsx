@@ -1,8 +1,10 @@
+import { saveMessage } from '@/db/queries';
+import { nextTick } from 'process';
 import React from 'react';
 import type { SVGProps } from 'react';
 
 const keyMap = {}
-export function PromptInput({handleSubmit, handleInputChange, input}) {
+export function PromptInput({handleSubmit, handleInputChange, input, modelName, conversationId}) {
 
         // Handle key down event
         function handleKeyDown(event) {
@@ -14,7 +16,7 @@ export function PromptInput({handleSubmit, handleInputChange, input}) {
             //DONT FORGET TO HANDLE WHEN YOU REMOVE A NEWLINE VIA BACKSPACE
 
             if(event.key === 'Enter' && !keyMap['Shift']){
-                handleSubmit();
+                handleSubmitMessage();
             }
         };
 
@@ -22,9 +24,24 @@ export function PromptInput({handleSubmit, handleInputChange, input}) {
             keyMap[event.key] = false;
         }
 
+        async function handleSubmitMessage() {
+            try {
+                const newConversationId = await saveMessage({
+                    message: input,
+                    role: 'user',
+                    conversationId: conversationId.current,
+                    modelName: modelName
+                })
+                conversationId.current = newConversationId[0].id;
+            } catch(error) {
+                console.error(error);
+            }
+            handleSubmit();
+        }
+
     return(
         <div className='flex-1 max-w-xl p-2 border border-gray-300 mb-6 mt-2 rounded-lg shadow-xl bg-[#2b2b2b] text-white'>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmitMessage}>
                     <div className='flex content-center'>
                         <textarea
                             className="grow border-none outline-none resize-none bg-transparent self-center"
