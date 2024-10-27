@@ -125,7 +125,7 @@ export function ModelSelector({modelFamily, displayName,  modelName, setModelFam
                     <PopoverTrigger asChild>
                         <div className="w-full h-full p-2 hover:bg-zinc-100 hover:text-black transition-all hover:cursor-pointer rounded-md">
                             <p className="text-left text-lg font-bold">{modelFamily}</p>
-                            <p className="text-left text-sm">Model: {displayName}</p>
+                            <p className="text-left text-sm">{displayName}</p>
                         </div>
                     </PopoverTrigger>
                     <PopoverContent className="w-full">
