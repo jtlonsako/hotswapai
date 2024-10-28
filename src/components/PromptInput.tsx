@@ -1,10 +1,12 @@
 import { saveMessage } from '@/db/queries';
-import { nextTick } from 'process';
 import React from 'react';
+import {useConversationStore} from '@/lib/stores';
 import type { SVGProps } from 'react';
 
 const keyMap = {}
-export function PromptInput({handleSubmit, handleInputChange, input, modelName, conversationId}) {
+export function PromptInput({handleSubmit, handleInputChange, input, modelName}) {
+    const conversationId = useConversationStore((state) => state.conversationId);
+    const setConversationId = useConversationStore((state) => state.setConversationId);
 
         // Handle key down event
         function handleKeyDown(event) {
@@ -29,10 +31,10 @@ export function PromptInput({handleSubmit, handleInputChange, input, modelName, 
                 const newConversationId = await saveMessage({
                     message: input,
                     role: 'user',
-                    conversationId: conversationId.current,
+                    conversationId: conversationId,
                     modelName: modelName
                 })
-                conversationId.current = newConversationId[0].id;
+                setConversationId(newConversationId[0].id);
             } catch(error) {
                 console.error(error);
             }
@@ -52,7 +54,7 @@ export function PromptInput({handleSubmit, handleInputChange, input, modelName, 
                             onKeyUp={handleKeyUp}
                             rows={1}
                         />
-                        <button type="submit" className='grid w-fit h-auto text-lg rounded-md justify-end items-end hover:bg-zinc-400 hover:bg-opacity-30 transition-all'>
+                        <button onClick={handleSubmitMessage} className='grid w-fit h-auto text-lg rounded-md justify-end items-end hover:bg-zinc-400 hover:bg-opacity-30 transition-all'>
                             <FormkitSubmit />
                         </button>
                     </div>

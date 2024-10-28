@@ -10,7 +10,7 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   const { messages, modelData } = await req.json();
-  const conversationId = modelData.conversationId.current;
+  const conversationId = modelData.conversationId;
   const coreMessages = convertToCoreMessages(messages);
   console.log(messages);
   const result = await streamText({
@@ -19,8 +19,8 @@ export async function POST(req: Request) {
     onFinish: async ({ responseMessages }) => {
       try {
         await saveMessage({
-          message: JSON.stringify(responseMessages[0].content[0].text),
-          role: JSON.stringify(responseMessages[0].role),
+          message: responseMessages[0].content[0].text,
+          role: responseMessages[0].role,
           conversationId: conversationId,
           modelName: modelData.modelName
         });

@@ -3,6 +3,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/libsql';
 import { conversations, messages } from './schema';
+import { eq } from 'drizzle-orm';
 
 const db = drizzle(process.env.DB_FILE_NAME!);
 
@@ -33,9 +34,33 @@ export async function saveMessage({
 
 export async function createConversation(modelName: string) {
     try{
-        return db.insert(conversations).values({model_name: modelName}).returning({id: conversations.id});
+        return db.insert(conversations).values({model_name: modelName, summary: "Working on adding summaries"}).returning({id: conversations.id});
     } catch (error) {
         console.error("New conversation not created");
+        throw error;
+    }
+}
+
+export async function pullAllConversations() {
+    try {
+        return db.select().from(conversations);
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function pullConversationsByModel(modelName: string) {
+    try {
+        return db.select().from(conversations).where(eq(conversations.model_name, modelName));
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function conversationMessages(conversationId: number) {
+    try {
+        return db.select().from(messages).where(eq(messages.conversation_id, conversationId));
+    } catch (error) {
         throw error;
     }
 }

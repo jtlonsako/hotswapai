@@ -8,6 +8,7 @@ import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 import { type CarouselApi } from "@/components/ui/carousel"
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
+import { useConversationStore, useModelStore } from "@/lib/stores";
 
 const modelDetails = {
     // openai: ["gpt-4-turbo", "chatgpt-4o-latest", "gpt-4-turbo-preview", "gpt-4o-mini", "gpt-3.5-turbo"],
@@ -51,8 +52,11 @@ const modelDetails = {
     }]
 }
 
-export function ModelSelector({modelFamily, displayName,  modelName, setModelFamily, setDisplayName, setModelName}) {
+export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModelFamily, setDisplayName}) {
     const [api, setApi] = useState<CarouselApi>();
+    const setConversationId = useConversationStore((state) => state.setConversationId)
+    const modelName = useModelStore((state) => state.modelName);
+    const setModelName = useModelStore((state) => state.setModelName);
 
     const modelNameList = modelDetails[modelFamily].map((model) => {
             return(
@@ -80,8 +84,8 @@ export function ModelSelector({modelFamily, displayName,  modelName, setModelFam
 
     function handleModelNamePress(model) {
         setModelName(model.modelName);
-        setDisplayName(model.displayName)
-
+        setDisplayName(model.displayName);
+        setConversationId(-1); //Reset conversationId to start a new conversation
     }
 
     //NOTE: Atm, the carousel transition is janky because this whole component is re-rendered whenever I change modelFamily.
@@ -128,8 +132,8 @@ export function ModelSelector({modelFamily, displayName,  modelName, setModelFam
                             <p className="text-left text-sm">{displayName}</p>
                         </div>
                     </PopoverTrigger>
-                    <PopoverContent className="w-full">
-                        <Carousel setApi={setApi}>
+                    <PopoverContent className="w-96">
+                        <Carousel setApi={setApi} className={`${isSidebarOpen ? 'ml-24' : 'ml-1'}`}>
                             <CarouselContent>
                                 <CarouselItem>
                                     <ul className="w-full border border-zinc-600 rounded-lg">
