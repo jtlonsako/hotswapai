@@ -11,9 +11,6 @@ import { useEffect, useState } from "react";
 import { useConversationStore, useModelStore } from "@/lib/stores";
 
 const modelDetails = {
-    // openai: ["gpt-4-turbo", "chatgpt-4o-latest", "gpt-4-turbo-preview", "gpt-4o-mini", "gpt-3.5-turbo"],
-    // anthropic: ["claude-3-5-sonnet-20240620", "claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307"],
-    // google: ["gemini-1.5-pro-latest", "gemini-1.5-pro", "gemini-1.5-flash-latest", "gemini-1.5-flash"]
     OpenAI: [{
         modelName: "gpt-4-turbo",
         displayName: "GPT-4 Turbo ($$$)"

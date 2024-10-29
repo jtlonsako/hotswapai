@@ -56,7 +56,7 @@ export default function Chat() {
         isSidebarOpen ? 'ml-64' : 'ml-0'
       }`}>
         <SidebarTrigger onClick={toggleSidebar} />
-        <div className="sm:ml-5 md:mt-4 mt-2 flex-1">
+        <div className="sm:ml-5 mt-2 flex-1">
           <ModelSelector
             displayName={displayName}
             modelFamily={modelFamily}

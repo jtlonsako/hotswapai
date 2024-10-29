@@ -12,7 +12,6 @@ export async function POST(req: Request) {
   const { messages, modelData } = await req.json();
   const conversationId = modelData.conversationId;
   const coreMessages = convertToCoreMessages(messages);
-  console.log(messages);
   const result = await streamText({
     model: selectModel(modelData),
     messages: coreMessages,
