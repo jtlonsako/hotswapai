@@ -1,13 +1,14 @@
 "use client"
 
 import { pullConversationsByModel } from "@/db/queries";
-import { useModelStore } from "@/lib/stores"
+import { useModelStore, useConversationStore } from "@/lib/stores"
 import { useEffect, useState } from "react";
 import { ConversationTab } from "./ConversationTab";
 import { SidebarMenu, SidebarMenuItem } from "./ui/sidebar";
 
 export function ConversationHistory() {
     const modelName = useModelStore((state) => state.modelName);
+    const conversationId = useConversationStore((state) => state.conversationId);
     const [conversations, setConversations] = useState<JSX.Element[]>();
 
     useEffect(() => {
@@ -29,7 +30,7 @@ export function ConversationHistory() {
         }
 
         fetchConversations();
-    }, [modelName])
+    }, [modelName, conversationId])
 
     return (
         <SidebarMenu>

@@ -3,7 +3,7 @@ TODO
 [x] - Save datetime info
 [x] - Update datetime on every new message into a convo
 [] - Partition chat history group by datetime
-[] - have new convos immediately show up in 'chat history'
+[x] - have new convos immediately show up in 'chat history'
 
 [] - Fix PromptInput
 [] - Add llama
