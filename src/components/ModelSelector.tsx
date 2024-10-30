@@ -8,20 +8,18 @@ import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 import { type CarouselApi } from "@/components/ui/carousel"
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
+import { useConversationStore, useModelStore } from "@/lib/stores";
 
 const modelDetails = {
-    // openai: ["gpt-4-turbo", "chatgpt-4o-latest", "gpt-4-turbo-preview", "gpt-4o-mini", "gpt-3.5-turbo"],
-    // anthropic: ["claude-3-5-sonnet-20240620", "claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307"],
-    // google: ["gemini-1.5-pro-latest", "gemini-1.5-pro", "gemini-1.5-flash-latest", "gemini-1.5-flash"]
     OpenAI: [{
-        modelName: "gpt-4-turbo",
-        displayName: "GPT-4 Turbo ($$$)"
+        modelName: "gpt-4o-mini",
+        displayName: "GPT-4o mini ($)"
     }, {
         modelName: "chatgpt-4o-latest",
         displayName: "GPT-4o latest ($$)"
     }, {
-        modelName: "gpt-4o-mini",
-        displayName: "GPT-4o mini ($)"
+        modelName: "gpt-4-turbo",
+        displayName: "GPT-4 Turbo ($$$)"
     }, {
         modelName: "gpt-3.5-turbo",
         displayName: "GPT-3.5 Turbo ($$)"
@@ -51,8 +49,11 @@ const modelDetails = {
     }]
 }
 
-export function ModelSelector({modelFamily, displayName,  modelName, setModelFamily, setDisplayName, setModelName}) {
+export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModelFamily, setDisplayName}) {
     const [api, setApi] = useState<CarouselApi>();
+    const setConversationId = useConversationStore((state) => state.setConversationId)
+    const modelName = useModelStore((state) => state.modelName);
+    const setModelName = useModelStore((state) => state.setModelName);
 
     const modelNameList = modelDetails[modelFamily].map((model) => {
             return(
@@ -80,8 +81,8 @@ export function ModelSelector({modelFamily, displayName,  modelName, setModelFam
 
     function handleModelNamePress(model) {
         setModelName(model.modelName);
-        setDisplayName(model.displayName)
-
+        setDisplayName(model.displayName);
+        setConversationId(-1); //Reset conversationId to start a new conversation
     }
 
     //NOTE: Atm, the carousel transition is janky because this whole component is re-rendered whenever I change modelFamily.
@@ -119,25 +120,25 @@ export function ModelSelector({modelFamily, displayName,  modelName, setModelFam
 
     return (
         <>
-            <p className="text-white mb-1 text-sm">Current Model:</p>
-            <div className="grid w-fit border border-zinc-600 rounded-lg text-white">
+            <p className="text-white mb-1 text-xs">Current Model:</p>
+            <div className="grid w-44 border border-zinc-600 rounded-lg text-white">
                 <Popover>
                     <PopoverTrigger asChild>
-                        <div className="w-full h-full p-2 hover:bg-zinc-100 hover:text-black transition-all hover:cursor-pointer rounded-md">
+                        <div className="w-full h-full p-2 bg-[#2b2b2b] hover:bg-zinc-100 hover:text-black transition-all hover:cursor-pointer rounded-md">
                             <p className="text-left text-lg font-bold">{modelFamily}</p>
-                            <p className="text-left text-sm">{displayName}</p>
+                            <p className="text-left text-xs">{displayName}</p>
                         </div>
                     </PopoverTrigger>
-                    <PopoverContent className="w-full">
-                        <Carousel setApi={setApi}>
+                    <PopoverContent className="w-96">
+                        <Carousel setApi={setApi} className={`${isSidebarOpen ? 'ml-24' : 'ml-1'}`}>
                             <CarouselContent>
                                 <CarouselItem>
-                                    <ul className="w-full border border-zinc-600 rounded-lg">
+                                    <ul className="w-full border border-zinc-600 rounded-lg bg-[#2b2b2b]">
                                         {modelFamilyList}
                                     </ul>
                                 </CarouselItem>
                                 <CarouselItem>
-                                    <ul className="w-full border border-zinc-600 rounded-lg">
+                                    <ul className="w-full border border-zinc-600 rounded-lg bg-[#2b2b2b]">
                                         {modelNameList}
                                     </ul>
                                 </CarouselItem>

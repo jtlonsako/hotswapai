@@ -3,20 +3,22 @@ import {
     SidebarContent,
     SidebarFooter,
     SidebarGroup,
+    SidebarGroupContent,
     SidebarGroupLabel,
     SidebarHeader,
   } from "@/components/ui/sidebar"
+import { ConversationHistory } from "./ConversationHistory";
 
-  //Load previous chat conversations from db and display them in chat history group.
-  //Find a way to transfer selected conversation from sidebar to main page state (zustand?).
-  
   export function AppSidebar() {
     return (
       <Sidebar className="bg-zinc-900">
         <SidebarHeader />
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel className="text-zinc-400">Chat History</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-zinc-200 text-sm">Chat History</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <ConversationHistory />
+            </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter />
