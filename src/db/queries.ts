@@ -55,7 +55,7 @@ export async function createConversation(modelName: string, summary: string) {
 
 export async function pullAllConversations() {
     try {
-        return db.select().from(conversations);
+        return (await db.select().from(conversations)).toReversed();
     } catch (error) {
         throw error;
     }
@@ -63,7 +63,7 @@ export async function pullAllConversations() {
 
 export async function pullConversationsByModel(modelName: string) {
     try {
-        return db.select().from(conversations).where(eq(conversations.model_name, modelName));
+        return (await db.select().from(conversations).where(eq(conversations.model_name, modelName))).toReversed();
     } catch (error) {
         throw error;
     }

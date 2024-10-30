@@ -12,14 +12,14 @@ import { useConversationStore, useModelStore } from "@/lib/stores";
 
 const modelDetails = {
     OpenAI: [{
-        modelName: "gpt-4-turbo",
-        displayName: "GPT-4 Turbo ($$$)"
+        modelName: "gpt-4o-mini",
+        displayName: "GPT-4o mini ($)"
     }, {
         modelName: "chatgpt-4o-latest",
         displayName: "GPT-4o latest ($$)"
     }, {
-        modelName: "gpt-4o-mini",
-        displayName: "GPT-4o mini ($)"
+        modelName: "gpt-4-turbo",
+        displayName: "GPT-4 Turbo ($$$)"
     }, {
         modelName: "gpt-3.5-turbo",
         displayName: "GPT-3.5 Turbo ($$)"
@@ -120,25 +120,25 @@ export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModel
 
     return (
         <>
-            <p className="text-white mb-1 text-sm">Current Model:</p>
-            <div className="grid w-fit border border-zinc-600 rounded-lg text-white">
+            <p className="text-white mb-1 text-xs">Current Model:</p>
+            <div className="grid w-44 border border-zinc-600 rounded-lg text-white">
                 <Popover>
                     <PopoverTrigger asChild>
-                        <div className="w-full h-full p-2 hover:bg-zinc-100 hover:text-black transition-all hover:cursor-pointer rounded-md">
+                        <div className="w-full h-full p-2 bg-[#2b2b2b] hover:bg-zinc-100 hover:text-black transition-all hover:cursor-pointer rounded-md">
                             <p className="text-left text-lg font-bold">{modelFamily}</p>
-                            <p className="text-left text-sm">{displayName}</p>
+                            <p className="text-left text-xs">{displayName}</p>
                         </div>
                     </PopoverTrigger>
                     <PopoverContent className="w-96">
                         <Carousel setApi={setApi} className={`${isSidebarOpen ? 'ml-24' : 'ml-1'}`}>
                             <CarouselContent>
                                 <CarouselItem>
-                                    <ul className="w-full border border-zinc-600 rounded-lg">
+                                    <ul className="w-full border border-zinc-600 rounded-lg bg-[#2b2b2b]">
                                         {modelFamilyList}
                                     </ul>
                                 </CarouselItem>
                                 <CarouselItem>
-                                    <ul className="w-full border border-zinc-600 rounded-lg">
+                                    <ul className="w-full border border-zinc-600 rounded-lg bg-[#2b2b2b]">
                                         {modelNameList}
                                     </ul>
                                 </CarouselItem>

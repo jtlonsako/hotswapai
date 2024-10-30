@@ -42,7 +42,7 @@ export function PromptInput({handleSubmit, handleInputChange, input, modelName})
         }
 
     return(
-        <div className='flex-1 max-w-xl p-2 border border-gray-300 mb-6 mt-2 rounded-lg shadow-xl bg-[#2b2b2b] text-white'>
+        <div className='flex-1 max-w-2xl p-2 border border-gray-300 mb-2 rounded-lg shadow-xl bg-[#2b2b2b] text-white'>
             <form onSubmit={handleSubmitMessage}>
                     <div className='flex content-center'>
                         <textarea

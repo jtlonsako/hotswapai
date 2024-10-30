@@ -11,8 +11,8 @@ import {useConversationStore, useModelStore} from '@/lib/stores';
 import React from 'react';
 
 export default function Chat() {
-  const [displayName, setDisplayName] = useState('Claude-3.5 Haiku ($)')
-  const [modelFamily, setModelFamily] = useState('Anthropic');
+  const [displayName, setDisplayName] = useState('GPT-4o mini ($)')
+  const [modelFamily, setModelFamily] = useState('OpenAI');
   const [messagesUpdate, setMessagesUpdate] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const modelName = useModelStore((state) => state.modelName)
@@ -48,7 +48,7 @@ export default function Chat() {
     }
 
     fetchConversations();
-  }, [conversationId])
+  }, [conversationId, modelName])
 
   return (
     <>
@@ -67,13 +67,13 @@ export default function Chat() {
         </div>
 
       </div>
-      <div className="flex flex-col w-full max-w-xl mx-auto py-24 stretch">
+      <div className="flex flex-col w-full max-w-xl md:max-w-2xl mx-auto py-24 stretch">
         <React.Suspense fallback={<p>Hello</p>}>
           <div className="hidden">{messagesUpdate}</div>
           {messages.map(m => (
             <div key={m.id} className="whitespace-pre-wrap my-4 text-white">
               {m.role === 'user' ? 'User: ' : 'AI: '}
-              <ReactMarkdown>{m.content}</ReactMarkdown>
+              <ReactMarkdown className={`${m.role === 'user' ? 'bg-zinc-400' : 'bg-green-400'} bg-opacity-20 p-2 rounded-md overflow-x-auto`}>{m.content}</ReactMarkdown>
             </div>
           ))}
         </React.Suspense>
@@ -81,7 +81,7 @@ export default function Chat() {
       </div>
       {/* <div id="footer" className="fixed bottom-0 min-h-24 h-auto w-full flex justify-center items-end"> */}
       <div id="footer" className={`fixed bottom-0 bg-[#2b2b2b] h-auto flex w-full justify-center items-end transition-all duration-300 ${
-        isSidebarOpen ? 'ml-24' : 'ml-0'
+        isSidebarOpen ? 'ml-32' : 'ml-0'
       }`}>
         <PromptInput handleSubmit={handleSubmit} handleInputChange={handleInputChange} input={input} modelName={modelName} />
       </div>

@@ -15,7 +15,7 @@ import { ConversationHistory } from "./ConversationHistory";
         <SidebarHeader />
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel className="text-zinc-400">Chat History</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-zinc-200 text-sm">Chat History</SidebarGroupLabel>
             <SidebarGroupContent>
               <ConversationHistory />
             </SidebarGroupContent>
