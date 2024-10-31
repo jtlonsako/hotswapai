@@ -1,27 +1,21 @@
-TODO
-[x] - Add accurate summary messages to conversation entries in DB
-[x] - Save datetime info
-[x] - Update datetime on every new message into a convo
-[x] - Partition chat history group by datetime
-[x] - Have new convos immediately show up in 'chat history'
-<!-- [] - When ConversationTab is selected, change current modelFamily/name when conversation is selected
-[] - Display model details in ConversationTab -->
+#HotswapAI
+##Use Leading AI models on a pay-as-you-go basis.
 
-[] - Fix PromptInput
-[x] - Fix ModelSelector empty background problem
-[] - Fix the submit button twealking sometimes
+HowswapAI is a simple and intuitive web app built for the purpose of allowing you to easily use a variety of AI models
+without having to pay a subscription fee. All you have to do is bring your own API keys for each AI provider (Anthropic, Google Cloud, OpenAI) and you will instantly be able to use leading models from each provider.
 
-[] - Add sonner errors and proper error-handling for network errors
-[] - Allow users to configure which modelFamilies they want activated
-[] - Dynamically select a model to create summaries based on the cheapest enable model from a modelFamily
+###NOTE: The app is in an early-alpha stage: to be honest it's currently just something I quickly built for myself, I am in the process of making it more viable for mass-consumption
 
-[] - Make new ConersationTabs fade out when text starts to overflow
-[] - Add llama
+##Requirements:
+- Node (Version 18.18+)
 
-[] - Good documentation for others to easily use the software
-
-NICE TO HAVES
-[] - Autoscroll along with the AI message
-[] - Have code writted by AI exist within a scrollable codeblock
-[] - Replace 'User' and 'AI' labels with styling that clearly defines who a message belongs to
-[] - Look into calculating token usage
+##Instructions:
+- Download the repo onto your local device and use a terminal to enter the root folder of the project.
+- Run `npm -i`
+- Create a new .env file at the root of the project, and paste your API keys in the following format:
+- - `OPENAI_API_KEY:your_secret_key`
+- - `ANTHROPIC_API_KEY:your_secret_key`
+- - `GOOGLE_GENERATIVE_AI_API_KEY:your_secret_key`
+- Run `npm run dev`
+- In a browser of your choice, enter 'http://localhost:3000' into the address bar
+- Enjoy!
