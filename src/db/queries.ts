@@ -24,7 +24,7 @@ export async function saveMessage({
             await updateConversationTime(conversationId);
             return db.insert(messages).values({message: message, from: role, conversation_id: conversationId, token_count: 10}).returning({id: messages.conversation_id});
         } else {
-            const summaryData = await fetch('http://localhost:3000/api/summarize', {
+            const summaryData = await fetch('https://multimodel.vercel.app/api/summarize', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
