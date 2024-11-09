@@ -55,11 +55,9 @@ export default function Chat() {
     <>
       <div className={`fixed w-full bg-[#2b2b2b] md:h-24 pb-2 h-fit flex`}>
         <SidebarTrigger onClick={toggleSidebar} className={`transition-all duration-300 ${
-        isSidebarOpen ? 'ml-64' : 'ml-0'
+        isSidebarOpen ? 'md:ml-64' : 'ml-0'
       }`} />
-        <div className={`sm:ml-5 mt-2 flex-1 transition-all duration-300 ${
-        isSidebarOpen ? 'ml-64' : 'ml-0'
-      }`}>
+        <div className={`sm:ml-5 mt-2 flex-1 transition-all duration-300`}>
           <ModelSelector
             displayName={displayName}
             modelFamily={modelFamily}
@@ -86,7 +84,7 @@ export default function Chat() {
       </div>
       {/* <div id="footer" className="fixed bottom-0 min-h-24 h-auto w-full flex justify-center items-end"> */}
       <div id="footer" className={`fixed bottom-0 bg-[#2b2b2b] h-auto flex w-full justify-center items-end transition-all duration-300 ${
-        isSidebarOpen ? 'ml-32' : 'ml-0'
+        isSidebarOpen ? 'md:ml-32' : 'ml-0'
       }`}>
         <PromptInput handleSubmit={handleSubmit} handleInputChange={handleInputChange} input={input} modelName={modelName} />
       </div>
