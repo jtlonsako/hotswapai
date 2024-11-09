@@ -1,11 +1,12 @@
 "use server"
 
 import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/libsql';
+// import { drizzle } from 'drizzle-orm/libsql';
+import { drizzle } from 'drizzle-orm/neon-http';
 import { conversations, messages } from './schema';
-import { eq } from 'drizzle-orm';
+import { eq, isNotNull } from 'drizzle-orm';
 
-const db = drizzle(process.env.DB_FILE_NAME!);
+const db = drizzle(process.env.DATABASE_URL!);
 
 export async function saveMessage({
     message,
@@ -19,7 +20,7 @@ export async function saveMessage({
     modelName: string
 }) {
     try {
-        if (conversationId > -1 && conversationId !== undefined) {
+        if (conversationId && conversationId > -1 && conversationId !== undefined) {
             await updateConversationTime(conversationId);
             return db.insert(messages).values({message: message, from: role, conversation_id: conversationId, token_count: 10}).returning({id: messages.conversation_id});
         } else {

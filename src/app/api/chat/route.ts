@@ -24,7 +24,7 @@ export async function POST(req: Request) {
           modelName: modelData.modelName
         });
       } catch (error) {
-        console.error("Failed to save chat");
+        console.error("Failed to save chat: ", error);
       }
     }
   });

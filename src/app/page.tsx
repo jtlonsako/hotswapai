@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import ReactMarkdown from 'react-markdown';
 import { useChat } from 'ai/react';
@@ -9,6 +9,7 @@ import { PromptInput } from '@/components/PromptInput';
 import { conversationMessages } from '@/db/queries';
 import {useConversationStore, useModelStore} from '@/lib/stores';
 import React from 'react';
+import { SignOutButton } from '@clerk/nextjs';
 
 export default function Chat() {
   const [displayName, setDisplayName] = useState('GPT-4o mini ($)')
@@ -52,11 +53,13 @@ export default function Chat() {
 
   return (
     <>
-      <div className={`fixed w-full bg-[#2b2b2b] md:h-24 pb-2 h-fit flex transition-all duration-300 ${
+      <div className={`fixed w-full bg-[#2b2b2b] md:h-24 pb-2 h-fit flex`}>
+        <SidebarTrigger onClick={toggleSidebar} className={`transition-all duration-300 ${
+        isSidebarOpen ? 'ml-64' : 'ml-0'
+      }`} />
+        <div className={`sm:ml-5 mt-2 flex-1 transition-all duration-300 ${
         isSidebarOpen ? 'ml-64' : 'ml-0'
       }`}>
-        <SidebarTrigger onClick={toggleSidebar} />
-        <div className="sm:ml-5 mt-2 flex-1">
           <ModelSelector
             displayName={displayName}
             modelFamily={modelFamily}
@@ -65,7 +68,9 @@ export default function Chat() {
             setModelFamily={setModelFamily}
           />
         </div>
-
+        <div className='mt-2 mr-5'>
+          <SignOutButton className="w-fit transition-none h-fit border border-zinc-200 rounded-lg hover:bg-zinc-500 p-2 text-white" />
+        </div>
       </div>
       <div className="flex flex-col w-full max-w-xl md:max-w-2xl mx-auto py-24 stretch">
         <React.Suspense fallback={<p>Hello</p>}>
