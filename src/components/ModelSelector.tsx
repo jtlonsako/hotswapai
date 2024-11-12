@@ -129,8 +129,8 @@ export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModel
                             <p className="text-left text-xs">{displayName}</p>
                         </div>
                     </PopoverTrigger>
-                    <PopoverContent className="w-96">
-                        <Carousel setApi={setApi} className={`${isSidebarOpen ? 'ml-24' : 'ml-1'}`}>
+                    <PopoverContent className="w-52 md:w-96">
+                        <Carousel setApi={setApi} className={`${isSidebarOpen ? 'md:ml-24' : 'ml-1'}`}>
                             <CarouselContent>
                                 <CarouselItem>
                                     <ul className="w-full border border-zinc-600 rounded-lg bg-[#2b2b2b]">
