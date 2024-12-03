@@ -29,6 +29,11 @@ jobs:
 
       # Step 4: Build the project
       - name: Build the project
+        env:
+            KEY_VAULT_URL: ${{ secrets.KEY_VAULT_URL }}
+            DATABASE_URL: ${{ secrets. DATABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: pnpm run build
 
       # Step 5: Deploy to Azure Static Web Apps
