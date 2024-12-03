@@ -34,7 +34,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.17.0",
+    "drizzle-orm": "^0.36.4",
     "drizzle-orm-pg": "^0.16.3",
     "embla-carousel-react": "^8.3.0",
     "lucide-react": "^0.453.0",
