@@ -12,7 +12,7 @@ import {
   // Get Key Vault name from environment variables
   // such as `https://${keyVaultName}.vault.azure.net`
   const keyVaultUrl = process.env.KEY_VAULT_URL!;
-  if (!keyVaultUrl) throw new Error("KEY_VAULT_URL is empty");
+  // if (!keyVaultUrl) throw new Error("KEY_VAULT_URL is empty");
   
   function printSecret(secret: KeyVaultSecret): void {
     const { name, value, properties } = secret;
