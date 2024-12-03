@@ -53,10 +53,9 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BLACK_SEA_02880AA0F }}
           # repo_token is not needed since skip_app_build is set to true and we're not using GitHub integrations
           action: "upload"
-          skip_app_build: true
           app_location: "/" # App source code path
           api_location: "" # Api source code path - optional
-          output_location: "out" # Built app content directory
+          output_location: "" # Built app content directory
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
