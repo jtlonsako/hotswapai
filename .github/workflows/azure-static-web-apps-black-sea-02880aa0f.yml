@@ -34,7 +34,7 @@ jobs:
 
       # Step 4: Install dependencies using pnpm
       - name: Install dependencies
-        run: pnpm install --legacy-peer-deps
+        run: pnpm install
 
       # Step 5: Build the project
       - name: Build the project
