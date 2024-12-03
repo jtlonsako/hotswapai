@@ -28,15 +28,15 @@ jobs:
 
         - name: Build and push container image to registry
           uses: docker/build-push-action@v4
-          env:
-            KEY_VAULT_URL: ${{ secrets.KEY_VAULT_URL }}
-            DATABASE_URL: ${{ secrets.DATABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-            NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           with:
             push: true
             tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
             file: ./Dockerfile
+            build-args: |
+              KEY_VAULT_URL=${{ secrets.KEY_VAULT_URL }}
+              DATABASE_URL=${{ secrets.DATABASE_URL }}
+              NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+              NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
     deploy:
         runs-on: ubuntu-latest
