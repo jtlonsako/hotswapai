@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ClerkProvider, SignedIn, SignedOut, SignInButton } from '@clerk/nextjs'
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
-import { LoginScreen } from "@/components/LoginScreen";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -18,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Multi Model",
+  title: "HotswapAI",
   description: "Use any AI model you please",
 };
 
@@ -32,17 +28,7 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#2b2b2b]`}
         >
-          <ClerkProvider>
-            <SignedOut>
-              <LoginScreen />
-            </SignedOut>
-            <SignedIn>
-              <SidebarProvider>
-                <AppSidebar />
-                {children}
-              </SidebarProvider>
-            </SignedIn>
-          </ClerkProvider>
+          {children}
         </body>
       </html>
   );
