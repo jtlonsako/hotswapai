@@ -45,7 +45,6 @@ jobs:
             NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
           pnpm run build
-          pnpm run export
 
       # Step 6: Deploy to Azure Static Web Apps
       - name: Build and Deploy
