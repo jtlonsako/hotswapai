@@ -4,7 +4,7 @@ import {useConversationStore} from '@/lib/stores';
 import type { SVGProps } from 'react';
 
 const keyMap = {}
-export function PromptInput({handleSubmit, handleInputChange, input, modelName}) {
+export function PromptInput({handleSubmit, handleInputChange, input, modelName, userId}) {
     const conversationId = useConversationStore((state) => state.conversationId);
     const setConversationId = useConversationStore((state) => state.setConversationId);
 
@@ -26,13 +26,15 @@ export function PromptInput({handleSubmit, handleInputChange, input, modelName})
             keyMap[event.key] = false;
         }
 
-        async function handleSubmitMessage() {
+        async function handleSubmitMessage(event) {
+            if(event) event.preventDefault();
             try {
                 const newConversationId = await saveMessage({
                     message: input,
                     role: 'user',
                     conversationId: conversationId,
-                    modelName: modelName
+                    modelName: modelName,
+                    userId: userId
                 })
                 setConversationId(newConversationId[0].id);
             } catch(error) {
@@ -54,7 +56,7 @@ export function PromptInput({handleSubmit, handleInputChange, input, modelName})
                             onKeyUp={handleKeyUp}
                             rows={1}
                         />
-                        <button onClick={handleSubmitMessage} className='grid w-fit h-auto text-lg rounded-md justify-end items-end hover:bg-zinc-400 hover:bg-opacity-30 transition-all'>
+                        <button className='grid w-fit h-auto text-lg rounded-md justify-end items-end hover:bg-zinc-400 hover:bg-opacity-30 transition-all'>
                             <FormkitSubmit />
                         </button>
                     </div>

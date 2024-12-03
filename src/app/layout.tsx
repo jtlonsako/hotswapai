@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Multi Model",
+  title: "HotswapAI",
   description: "Use any AI model you please",
 };
 
@@ -30,11 +28,8 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#2b2b2b]`}
         >
-        <SidebarProvider>
-          <AppSidebar />
           {children}
-        </SidebarProvider>
-          </body>
+        </body>
       </html>
   );
 }

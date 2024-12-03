@@ -1,8 +1,11 @@
-import { openai } from "@ai-sdk/openai"
+import { getApiSecret } from "@/db/queries";
+import { createOpenAI } from "@ai-sdk/openai"
 import { generateText } from 'ai';
 
 export async function POST(request) {
     const res = await request.json();
+    const secretKey = await getApiSecret(res.userId, 'openai')
+    const openai = createOpenAI({apiKey: secretKey.value})
     const { text } = await generateText({
       model: openai('gpt-4o-mini'),
       prompt: `Below is a message sent by a user to an AI assistant. 
@@ -12,8 +15,4 @@ export async function POST(request) {
     return new Response(JSON.stringify({ summary: text }), {
       headers: { 'Content-Type': 'application/json' },
   });
-}
-
-export function GET() {
-  return Response.json({message: "Hello there!"})
 }
