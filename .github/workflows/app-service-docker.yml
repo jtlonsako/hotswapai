@@ -6,7 +6,7 @@ on:
 env:
     REGISTRY: ghcr.io
     IMAGE_NAME: ${{ github.repository }}
-    AZURE_WEBAPP_NAME: hotswapai
+    AZURE_WEBAPP_NAME: web-hotswapai-docker
 
 jobs:
     build:
