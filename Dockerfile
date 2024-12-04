@@ -71,9 +71,9 @@ COPY --from=builder /app/.next/static ./.next/static
 USER nextjs
 
 # Expose the application port
-EXPOSE 3000
-ENV PORT 3000
+EXPOSE 80
+ENV PORT 80
 ENV HOSTNAME 0.0.0.0
 
 # Start the application
-CMD node server.js
+CMD HOSTNAME="0.0.0.0" PORT=80 node server.js
