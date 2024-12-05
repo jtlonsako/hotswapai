@@ -56,8 +56,8 @@ export async function signup(formData: FormData) {
 
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-  const firstName = formData.get('first_name');
-  const lastName = formData.get('last_name');
+  const firstName = formData.get('firstName');
+  const lastName = formData.get('lastName');
 
   // type-casting here for convenience
   // in practice, you should validate your inputs

@@ -1,4 +1,4 @@
-import { login } from "@/utils/actions";
+import { signup } from "@/utils/actions";
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -14,11 +13,13 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 const formSchema = z.object({
+    firstName: z.string().min(2).max(50),
+    lastName: z.string().min(2).max(50),
     email: z.string().min(2).max(50),
     password: z.string().min(6).max(50)
   })
 
-export function LoginComponent() {
+export function SignupComponent() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -27,23 +28,56 @@ export function LoginComponent() {
         },
       })
 
-      function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        login(values);
-      }
+    function onSubmit(values: z.infer<typeof formSchema>) {
+        // Create a new FormData object
+        const formData = new FormData();
+
+        // Append each field to the FormData object
+        Object.entries(values).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+
+        // Pass the FormData object to the signup function
+        signup(formData);      
+    }
 
     return(
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full md:w-64 space-y-4 text-zinc-200">
                 <FormField
                     control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                        <Input placeholder="Josh" type="text" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                        <Input placeholder="Tesfaye" type="text" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
                     name="email"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Last Name</FormLabel>
                         <FormControl>
-                        <Input placeholder="elonmusk@x.com" type="email" {...field} />
+                        <Input placeholder="yourname@email.com" type="email" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
