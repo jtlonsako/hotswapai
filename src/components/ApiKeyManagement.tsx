@@ -33,7 +33,6 @@ export function ApiKeyManagement({userId = ""} : {userId: string}) {
 
       useEffect(() => {
         if(userId !== ''){
-            console.log(userId)
             getUserApiKeys(userId).then((data) => {
                 let apiKeyList: [] = [];
                 data.forEach((apiKey) => {

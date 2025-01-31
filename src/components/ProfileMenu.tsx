@@ -81,60 +81,6 @@ export function ProfileMenu() {
     )
 }
 
-// function SettingsDialog({userId}: {userId: string}) {
-
-//     return (
-//         <DialogContent className='bg-white'>
-//             <DialogHeader>
-//                 <DialogTitle className='text-slate-600'>Settings</DialogTitle>
-//             </DialogHeader>
-//             <Tabs defaultValue="account" className="w-full md:w-[400px]">
-//                     <TabsList className="grid w-full grid-cols-2">
-//                         <TabsTrigger value="account">Account</TabsTrigger>
-//                         <TabsTrigger value="apiKeys">API Keys</TabsTrigger>
-//                     </TabsList>
-//                     <TabsContent value="account">
-//                         <Card>
-//                         <CardHeader>
-//                             <CardTitle>Account</CardTitle>
-//                             <CardDescription>
-//                             Make changes to your account here. Click save when you're done.
-//                             </CardDescription>
-//                         </CardHeader>
-//                         <CardContent className="space-y-2">
-//                             <div className="space-y-1">
-//                             <Label htmlFor="firstName">First Name</Label>
-//                             <Input id="firstName" placeholder='Enter First Name' />
-//                             </div>
-//                             <div className="space-y-1">
-//                             <Label htmlFor="lastName">Last Name</Label>
-//                             <Input id="lastName" placeholder='Enter Last Name' />
-//                             </div>
-//                         </CardContent>
-//                         <CardFooter>
-//                             <Button>Save changes</Button>
-//                         </CardFooter>
-//                         </Card>
-//                     </TabsContent>
-//                     <TabsContent value="apiKeys">
-//                         <Card>
-//                         <CardHeader>
-//                             <CardTitle>API Keys</CardTitle>
-//                             <CardDescription>
-//                             Make changes to your currently available API Keys, or add new ones.
-//                             </CardDescription>
-//                         </CardHeader>
-//                         <CardContent className="">
-//                             <ApiKeyManagement userId={userId} />
-//                         </CardContent>
-//                         </Card>
-//                     </TabsContent>
-//                 </Tabs>
-//         </DialogContent>
-
-//     )
-// }
-
 function SettingsDialog({ userId }: { userId: string }) {
     const [userInfo, setUserInfo] = useState({ firstName: '', lastName: '' });
 

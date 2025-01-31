@@ -18,7 +18,8 @@ export const messages = pgTable("messages", {
 export const apiKeys = pgTable("api_keys", {
   name: text().unique().notNull(),
   provider: text().notNull(),
-  user_id: text().notNull()
+  user_id: text().notNull(),
+  provider_id: integer().references(() => providers.id, { onDelete: "cascade" })
 });
 
 export const profiles = pgTable("profiles", {
@@ -34,7 +35,7 @@ export const providers = pgTable("providers", {
 
 export const models = pgTable("models", {
   id: integer().primaryKey().generatedAlwaysAsIdentity({ startWith: 1 }),
-  provider: integer().references(() => providers.id, { onDelete: "cascade"}),
+  provider: integer().references(() => providers.id, { onDelete: "cascade" }),
   api_name: text().notNull(),
   display_name: text().notNull()
 })

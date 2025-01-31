@@ -8,122 +8,94 @@ import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 import { type CarouselApi } from "@/components/ui/carousel"
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
+import { createClient } from '@/utils/supabase/client';
 import { useConversationStore, useModelStore } from "@/lib/stores";
-import { getModelsByProvider, getProviders } from "@/db/queries";
+import { getModels, getProvidersByUser } from "@/db/queries";
 
-const modelDetails = {
-    OpenAI: [{
-        modelName: "gpt-4o-mini",
-        displayName: "GPT-4o mini ($)"
-    }, {
-        modelName: "chatgpt-4o-latest",
-        displayName: "GPT-4o latest ($$)"
-    }, {
-        modelName: "gpt-4-turbo",
-        displayName: "GPT-4 Turbo ($$$)"
-    }, {
-        modelName: "gpt-3.5-turbo",
-        displayName: "GPT-3.5 Turbo ($$)"
-    }],
-    Anthropic: [{
-        modelName: "claude-3-opus-20240229",
-        displayName: "Claude-3 Opus ($$$$)"
-    }, {
-        modelName: "claude-3-haiku-20240307",
-        displayName: "Claude-3.5 Haiku ($$)"
-    }, {
-        modelName: "claude-3-5-sonnet-20240620",
-        displayName: "Claude-3.5 Sonnet ($$$)"
-    }],
-    Google: [{
-        modelName: "gemini-1.5-pro-latest",
-        displayName: "Gemini-1.5 Pro Latest ($$)"
-    }, {
-        modelName: "gemini-1.5-pro",
-        displayName: "Gemini-1.5 Pro ($$)"
-    }, {
-        modelName: "gemini-1.5-flash-latest",
-        displayName: "Gemini-1.5 Flash Latest ($)"
-    }, {
-        modelName: "gemini-1.5-flash",
-        displayName: "Gemini-1.5 Flash ($)"
-    }]
-}
-
+//NOTE: Selecting a provider does not auto-update the selected model - FIX THIS.
 export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModelFamily, setDisplayName}) {
     const [api, setApi] = useState<CarouselApi>();
     const [providers, setProviders] = useState([{id: 0, company: ''}]);
     const [models, setModels] = useState([]);
+    const [userId, setUserId] = useState<string>('');
     const [modelDisplay, setModelDisplay] = useState<Element[]>([<li key="0"></li>])
     const [providersDisplay, setProvidersDisplay] = useState<Element[]>([<li key="0"></li>]);
     const setConversationId = useConversationStore((state) => state.setConversationId)
     const modelName = useModelStore((state) => state.modelName);
     const setModelName = useModelStore((state) => state.setModelName);
 
+    const supabase = createClient();
+
+
+    useEffect(() => {
+        const isLoggedIn = async () => {
+  
+          const { data, error } = await supabase.auth.getUser();
+          setUserId(data.user.id)
+        }    
+        isLoggedIn();
+      }, [])
+
     useEffect(() => {
         const getProviderList = async () => {
-            const providerList = await getProviders()
-            const currentProviderId = providerList.filter((provider) => provider.company === modelFamily)[0].id;
-            const modelList = await getModelsByProvider(currentProviderId);
-            console.log(modelList);
+            // const providerList = await getProviders();
+            const providerList = await getProvidersByUser(userId);
+            const modelList = await getModels();
+            console.log(providerList);
+            setModels(modelList);
             setProviders(providerList);
         }
 
         getProviderList();
-    }, [])
+    }, [userId])
 
     useEffect(() => {
-        const getModelList = async () => {
-            const currentProviderId = providers.filter((provider) => provider.company === modelFamily)[0]?.id;
-            const modelList = await getModelsByProvider(currentProviderId);
-            console.log(modelList);
-            setModels(modelList);
-        }
-
-        getModelList();
-        setProvidersDisplay(providers.map((provider) => {
-            return (
-                <li key={provider.company}>
-                    <Button className={`w-full text-left ${provider.company === modelFamily ? 'bg-accent text-accent-foreground' : ''}`} variant="ghost" onClick={() => handleModelFamilyPress(provider.company)}>
+        if (providers.length >= 1 && providers[0].id !== 0) {
+            setProvidersDisplay(providers.map((provider) => {
+                return (
+                    <li key={provider.company}>
+                        <Button className={`w-full text-left ${provider.company === modelFamily ? 'bg-accent text-accent-foreground' : ''}`} variant="ghost" onClick={() => handleModelFamilyPress(provider)}>
+                            <div className="grid grid-cols-2 w-full">
+                                <p>{provider.company}</p>
+                                <p className="justify-self-end">&gt;</p>
+                            </div>
+                        </Button>
+                    </li>
+                )
+            }))
+        } else {
+            setProvidersDisplay(
+                <>
+                    <Button className="w-full text-left" variant="ghost">
                         <div className="grid grid-cols-2 w-full">
-                            <p>{provider.company}</p>
-                            <p className="justify-self-end">&gt;</p>
-                        </div>
+                            <p>Add new provider</p>
+                            <p className="justify-self-end">+</p>
+                        </div>                    
                     </Button>
-                </li>
+                </>
             )
-        }))
+            setModelFamily("No Providers Added")
+            setModelName("");
+            setDisplayName("")
+        }
 
     }, [providers, modelFamily])
 
     useEffect(() => {
-        setModelDisplay(models.map((model) => {
+        const currentProviderId = providers.filter((provider) => provider.company === modelFamily)[0]?.id;
+        const modelsFromProvider = models.filter((model) => model.provider === currentProviderId)
+        setModelDisplay(modelsFromProvider.map((model) => {
             return (
                 <li key={model.id}>
                     <PopoverClose asChild>
-                        <Button className={`w-full text-left ${model.displayName === modelName ? 'bg-accent text-accent-foreground' : ''}`} variant="ghost" onClick={() => handleModelNamePress(model)}>{model.display_name}</Button>
+                        <Button className={`w-full text-left ${model.display_name === displayName ? 'bg-accent text-accent-foreground' : ''}`} variant="ghost" onClick={() => handleModelNamePress(model)}>
+                            <p>{model.display_name}</p>
+                        </Button>
                     </PopoverClose>
                 </li>
             )
         }))
-    }, [modelFamily, models])
-
-    const modelNameList = modelDetails[modelFamily].map((model) => {
-            return(
-                <li key={model.modelName}>
-                    <PopoverClose asChild>
-                        <Button className={`w-full text-left ${model.modelName === modelName ? 'bg-accent text-accent-foreground' : ''}`} variant="ghost" onClick={() => handleModelNamePress(model)}>{model.displayName}</Button>
-                    </PopoverClose>
-                </li>
-            )
-    })
-
-    const modelFamilyList = createModelFamilyList();
-
-    useEffect(() => {
-        setModelName(modelDetails[modelFamily][0].modelName)
-        setDisplayName(modelDetails[modelFamily][0].displayName)
-    }, [modelFamily])
+    }, [modelFamily, displayName])
 
     function handleModelNamePress(model) {
         setModelName(model.api_name);
@@ -131,26 +103,12 @@ export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModel
         setConversationId(-1); //Reset conversationId to start a new conversation
     }
 
-    function handleModelFamilyPress(key) {
-        setModelFamily(key);
+    function handleModelFamilyPress(provider) {
+        setModelFamily(provider.company);
+        const currentModel = models.filter((model => model.provider === provider.id))[0];
+        setModelName(currentModel.api_name);
+        setDisplayName(currentModel.display_name);
         api?.scrollNext();
-    }
-
-    function createModelFamilyList() {
-        const modelFamilyList = []
-        for(const key in modelDetails) {
-            modelFamilyList.push(
-                <li key={key}>
-                    <Button className={`w-full text-left ${key === modelFamily ? 'bg-accent text-accent-foreground' : ''}`} variant="ghost" onClick={() => handleModelFamilyPress(key)}>
-                        <div className="grid grid-cols-2 w-full">
-                            <p>{key}</p>
-                            <p className="justify-self-end">&gt;</p>
-                        </div>
-                    </Button>
-                </li>
-            )
-        }
-        return modelFamilyList;    
     }
 
     return (
@@ -164,8 +122,8 @@ export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModel
                             <p className="text-left text-xs">{displayName}</p>
                         </div>
                     </PopoverTrigger>
-                    <PopoverContent className="w-52 md:w-96">
-                        <Carousel setApi={setApi} className={`${isSidebarOpen ? 'md:ml-24' : 'ml-1'}`}>
+                    <PopoverContent className="w-52 md:w-80">
+                        <Carousel setApi={setApi} className={`${isSidebarOpen ? 'ml-6' : 'ml-1'}`}>
                             <CarouselContent>
                                 <CarouselItem>
                                     <ul className="w-full border border-zinc-600 rounded-lg bg-[#2b2b2b]">

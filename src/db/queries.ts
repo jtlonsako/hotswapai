@@ -115,6 +115,22 @@ export async function getProviders() {
     }
 }
 
+export async function getProvidersByUser(userId: string) {
+    try {
+        return await db.select({id: providers.id, company: providers.company}).from(apiKeys).innerJoin(providers, eq(apiKeys.provider_id, providers.id)).where(eq(apiKeys.user_id, userId));
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function getModels() {
+    try {
+        return db.select().from(models);
+    } catch (error) {
+        throw error;
+    }
+}
+
 export async function getModelsByProvider(providerId: number) {
     try {
         return db.select().from(models).where(eq(models.provider, providerId));
@@ -150,7 +166,7 @@ export async function getApiSecret(userId: string, provider: string) {
 
 export async function getUserApiKeys(userId: string) {
     try {
-        let userApiProviders = await db.select({provider: apiKeys.provider, name: apiKeys.name}).from(apiKeys).where(eq(apiKeys.user_id, userId))
+        let userApiProviders = await db.select({provider: apiKeys.provider, name: apiKeys.name, prvoider_id: apiKeys.provider_id}).from(apiKeys).where(eq(apiKeys.user_id, userId))
         return userApiProviders;
     } catch (error) {
         throw error;
