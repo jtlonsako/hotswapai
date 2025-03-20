@@ -127,6 +127,7 @@ function AddApiKey({userId}: {userId: string}) {
                                             <SelectItem value="openai">OpenAI</SelectItem>
                                             <SelectItem value="anthropic">Anthropic</SelectItem>
                                             <SelectItem value="google">Google</SelectItem>
+                                            <SelectItem value="deepseek">DeepSeek</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </FormControl>

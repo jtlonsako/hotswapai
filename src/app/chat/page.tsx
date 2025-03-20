@@ -21,7 +21,7 @@ export default function Chat() {
   const [userId, setUserId] = useState<string>('');
   const modelName = useModelStore((state) => state.modelName)
   const conversationId = useConversationStore((state) => state.conversationId)
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     body: {
       modelData: {
         modelFamily: modelFamily,
@@ -59,7 +59,7 @@ export default function Chat() {
       dbMessages.forEach((message) => {
         messages.push({
           id: `${message.id}`,
-          role: message.from,
+          role: message.from as any,
           content: message.message
         })
       });
@@ -91,13 +91,22 @@ export default function Chat() {
       </div>
       <div className="flex flex-col w-full max-w-xl md:max-w-2xl mx-auto py-24 stretch">
         <React.Suspense fallback={<p>Hello</p>}>
-          <div className="hidden">{messagesUpdate}</div>
           {messages.map(m => (
             <div key={m.id} className="whitespace-pre-wrap my-4 text-white">
               {m.role === 'user' ? 'User: ' : 'AI: '}
+              {m.reasoning && <pre>{m.reasoning}</pre>}
               <ReactMarkdown className={`${m.role === 'user' ? 'bg-zinc-400' : 'bg-green-400'} bg-opacity-20 p-2 rounded-md overflow-x-auto`}>{m.content}</ReactMarkdown>
             </div>
           ))}
+          {isLoading && (
+            <div className="whitespace-pre-wrap my-4 text-white">
+              AI: 
+              <div className="bg-green-400 bg-opacity-20 p-4 rounded-md flex items-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-3"></div>
+                <span>Thinking...</span>
+              </div>
+            </div>
+          )}
         </React.Suspense>
 
       </div>

@@ -47,6 +47,13 @@ const modelDetails = {
     }, {
         modelName: "gemini-1.5-flash",
         displayName: "Gemini-1.5 Flash ($)"
+    }],
+    DeepSeek: [{
+        modelName: "deepseek-chat",
+        displayName: "DeepSeek Chat ($)"
+    }, {
+        modelName: "deepseek-reasoner",
+        displayName: "DeepSeek R1 ($$)"
     }]
 }
 
@@ -56,17 +63,20 @@ export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModel
     const [models, setModels] = useState([]);
     const [modelDisplay, setModelDisplay] = useState<Element[]>([<li key="0"></li>])
     const [providersDisplay, setProvidersDisplay] = useState<Element[]>([<li key="0"></li>]);
+    const [loading, setLoading] = useState(true);
     const setConversationId = useConversationStore((state) => state.setConversationId)
     const modelName = useModelStore((state) => state.modelName);
     const setModelName = useModelStore((state) => state.setModelName);
 
     useEffect(() => {
         const getProviderList = async () => {
+            setLoading(true); // Set loading to true before fetching
             const providerList = await getProviders()
             const currentProviderId = providerList.filter((provider) => provider.company === modelFamily)[0].id;
             const modelList = await getModelsByProvider(currentProviderId);
-            console.log(modelList);
             setProviders(providerList);
+            setLoading(false); // Set loading to false after fetching
+
         }
 
         getProviderList();
@@ -155,33 +165,41 @@ export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModel
 
     return (
         <>
-            <p className="text-white mb-1 text-xs">Current Model:</p>
-            <div className="grid w-44 border border-zinc-600 rounded-lg text-white">
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <div className="w-full h-full p-2 bg-[#2b2b2b] hover:bg-zinc-100 hover:text-black transition-all hover:cursor-pointer rounded-md">
-                            <p className="text-left text-lg font-bold">{modelFamily}</p>
-                            <p className="text-left text-xs">{displayName}</p>
-                        </div>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-52 md:w-96">
-                        <Carousel setApi={setApi} className={`${isSidebarOpen ? 'md:ml-24' : 'ml-1'}`}>
-                            <CarouselContent>
-                                <CarouselItem>
-                                    <ul className="w-full border border-zinc-600 rounded-lg bg-[#2b2b2b]">
-                                        {providersDisplay}
-                                    </ul>
-                                </CarouselItem>
-                                <CarouselItem>
-                                    <ul className="w-full border border-zinc-600 rounded-lg bg-[#2b2b2b]">
-                                        {/* {modelNameList} */}
-                                        {modelDisplay}
-                                    </ul>
-                                </CarouselItem>
-                            </CarouselContent>
-                        </Carousel>
-                    </PopoverContent>
-                </Popover>
+            <div>
+                <p className="text-white mb-1 text-xs">Current Model:</p>
+                <div className="grid w-44 border border-zinc-600 rounded-lg text-white">
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <div className="w-full h-full p-2 bg-[#2b2b2b] hover:bg-zinc-100 hover:text-black transition-all hover:cursor-pointer rounded-md">
+                                <p className="text-left text-lg font-bold">{modelFamily}</p>
+                                <p className="text-left text-xs">{displayName}</p>
+                            </div>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-52 md:w-96">
+                            {loading ? (
+                                <div className="flex justify-center items-center">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+                                </div>
+                            ) : (
+                                <Carousel setApi={setApi} className={`${isSidebarOpen ? 'md:ml-24' : 'ml-1'}`}>
+                                    <CarouselContent>
+                                        <CarouselItem>
+                                        <ul className="w-full border border-zinc-600 rounded-lg bg-[#2b2b2b]">
+                                            {providersDisplay}
+                                        </ul>
+                                    </CarouselItem>
+                                    <CarouselItem>
+                                        <ul className="w-full border border-zinc-600 rounded-lg bg-[#2b2b2b]">
+                                            {/* {modelNameList} */}
+                                            {modelDisplay}
+                                        </ul>
+                                    </CarouselItem>
+                                </CarouselContent>
+                            </Carousel>
+                            )}
+                        </PopoverContent>
+                    </Popover>
+                </div>
             </div>
         </>
     )
