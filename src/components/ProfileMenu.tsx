@@ -29,20 +29,26 @@ import { userInfo } from 'os';
 export function ProfileMenu() {
     const [userId, setUserId] = useState("");
     const [currentUserInfo, setUserInfo] = useState({firstName: '', lastName: '', initials: ''})
+    const [isLoading, setIsLoading] = useState(true);
     const supabase = createClient();
 
     useEffect(() => {
         const isLoggedIn = async () => {
-  
-          const { data, error } = await supabase.auth.getUser();
+          setIsLoading(true);
+          try {
+            const { data, error } = await supabase.auth.getUser();
 
-          if(error) throw error;
+            if(error) throw error;
 
-
-          setUserId(data.user!.id)
-          const loadedUserInfo = await getUserInfo(data.user!.id);
-          const initials = loadedUserInfo[0].first_name.charAt(0) + loadedUserInfo[0].last_name.charAt(0);
-          setUserInfo({firstName: loadedUserInfo[0].first_name, lastName: loadedUserInfo[0].last_name, initials});
+            setUserId(data.user!.id)
+            const loadedUserInfo = await getUserInfo(data.user!.id);
+            const initials = loadedUserInfo[0].first_name.charAt(0) + loadedUserInfo[0].last_name.charAt(0);
+            setUserInfo({firstName: loadedUserInfo[0].first_name, lastName: loadedUserInfo[0].last_name, initials});
+          } catch (error) {
+            console.error("Error loading user info:", error);
+          } finally {
+            setIsLoading(false);
+          }
         }
     
         isLoggedIn();
@@ -57,12 +63,25 @@ export function ProfileMenu() {
             <DropdownMenu>
                 <DropdownMenuTrigger className="hover:bg-slate-200 hover:text-black text-slate-200 bg-slate-400 transition-colors rounded-full px-5 py-4">
                     <Avatar>
-                    <AvatarFallback>{currentUserInfo.initials}</AvatarFallback>
+                    {isLoading ? (
+                        <AvatarFallback>
+                            <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-900"></div>
+                        </AvatarFallback>
+                    ) : (
+                        <AvatarFallback>{currentUserInfo.initials}</AvatarFallback>
+                    )}
                     </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                     <Dialog>
-                        <DropdownMenuLabel>{currentUserInfo.firstName + " " + currentUserInfo.lastName}</DropdownMenuLabel>
+                        {isLoading ? (
+                            <DropdownMenuLabel className="flex items-center">
+                                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-900 mr-2"></div>
+                                Loading...
+                            </DropdownMenuLabel>
+                        ) : (
+                            <DropdownMenuLabel>{currentUserInfo.firstName + " " + currentUserInfo.lastName}</DropdownMenuLabel>
+                        )}
                         <DropdownMenuSeparator />
                         <DialogTrigger asChild>
                             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -137,14 +156,23 @@ export function ProfileMenu() {
 
 function SettingsDialog({ userId }: { userId: string }) {
     const [userInfo, setUserInfo] = useState({ firstName: '', lastName: '' });
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         const fetchUserInfo = async () => {
-            const loadedUserInfo = await getUserInfo(userId);
-            setUserInfo({
-                firstName: loadedUserInfo[0].first_name,
-                lastName: loadedUserInfo[0].last_name,
-            });
+            setIsLoading(true);
+            try {
+                const loadedUserInfo = await getUserInfo(userId);
+                setUserInfo({
+                    firstName: loadedUserInfo[0].first_name,
+                    lastName: loadedUserInfo[0].last_name,
+                });
+            } catch (error) {
+                console.error("Error fetching user info:", error);
+            } finally {
+                setIsLoading(false);
+            }
         };
 
         if (userId) {
@@ -161,7 +189,14 @@ function SettingsDialog({ userId }: { userId: string }) {
     };
 
     const handleSaveChanges = async () => {
-        await updateUserInfo(userId, userInfo.firstName, userInfo.lastName)
+        setIsSaving(true);
+        try {
+            await updateUserInfo(userId, userInfo.firstName, userInfo.lastName);
+        } catch (error) {
+            console.error("Error updating user info:", error);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -182,29 +217,46 @@ function SettingsDialog({ userId }: { userId: string }) {
                                 Make changes to your account here. Click save when you're done.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-2">
-                            <div className="space-y-1">
-                                <Label htmlFor="firstName">First Name</Label>
-                                <Input
-                                    id="firstName"
-                                    placeholder="Enter First Name"
-                                    value={userInfo.firstName}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label htmlFor="lastName">Last Name</Label>
-                                <Input
-                                    id="lastName"
-                                    placeholder="Enter Last Name"
-                                    value={userInfo.lastName}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                        </CardContent>
-                        <CardFooter>
-                            <Button onClick={handleSaveChanges}>Save changes</Button>
-                        </CardFooter>
+                        {isLoading ? (
+                            <CardContent className="flex justify-center items-center py-8">
+                                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
+                            </CardContent>
+                        ) : (
+                            <>
+                                <CardContent className="space-y-2">
+                                    <div className="space-y-1">
+                                        <Label htmlFor="firstName">First Name</Label>
+                                        <Input
+                                            id="firstName"
+                                            placeholder="Enter First Name"
+                                            value={userInfo.firstName}
+                                            onChange={handleInputChange}
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label htmlFor="lastName">Last Name</Label>
+                                        <Input
+                                            id="lastName"
+                                            placeholder="Enter Last Name"
+                                            value={userInfo.lastName}
+                                            onChange={handleInputChange}
+                                        />
+                                    </div>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button onClick={handleSaveChanges} disabled={isSaving}>
+                                        {isSaving ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                                                Saving...
+                                            </>
+                                        ) : (
+                                            "Save changes"
+                                        )}
+                                    </Button>
+                                </CardFooter>
+                            </>
+                        )}
                     </Card>
                 </TabsContent>
                 <TabsContent value="apiKeys">

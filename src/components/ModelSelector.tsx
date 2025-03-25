@@ -118,6 +118,12 @@ export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModel
         }))
     }, [modelFamily, models])
 
+    useEffect(() => {
+        if (modelFamily && api) {
+            api.scrollNext();
+        }
+    }, [modelFamily]);
+
     const modelNameList = modelDetails[modelFamily].map((model) => {
             return(
                 <li key={model.modelName}>
@@ -142,8 +148,7 @@ export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModel
     }
 
     function handleModelFamilyPress(key) {
-        setModelFamily(key);
-        api?.scrollNext();
+        setModelFamily(key);  
     }
 
     function createModelFamilyList() {

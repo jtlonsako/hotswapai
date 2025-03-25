@@ -51,41 +51,41 @@ export async function login(formData: {email: string, password: string}) {
 //   redirect('/chat')
 // }
 
-export async function signup(formData: FormData) {
+export async function signup(formData: {firstname: string, lastname: string, email: string, password: string}) {
   const supabase = await createClient()
 
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
-  const firstName = formData.get('first_name');
-  const lastName = formData.get('last_name');
+  const email = formData.email as string;
+  const password = formData.password as string;
+  const firstName = formData.firstname;
+  const lastName = formData.lastname;
 
   // type-casting here for convenience
   // in practice, you should validate your inputs
   const data = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
+    email: formData.email as string,
+    password: formData.password as string,
   }
 
-  const { data: authData, error } = await supabase.auth.signUp({email, password})
+  const { data: {user}, error } = await supabase.auth.signUp({email, password})
 
   if (error) {
     redirect('/error')
   }
 
-    // Insert the user's first and last name into the profiles table
-    const userId = authData.user.id
-    const { error: profileError } = await supabase.from('profiles').insert([
-      {
-        id: userId, // Use the user's ID from Supabase Auth
-        first_name: firstName,
-        last_name: lastName,
-      },
-    ])
+  //Insert the user's first and last name into the profiles table
+  const userId = user?.id
+  const { error: profileError } = await supabase.from('profiles').insert([
+    {
+      id: userId, // Use the user's ID from Supabase Auth
+      first_name: firstName,
+      last_name: lastName,
+    },
+  ])
   
-    if (profileError) {
-      console.error('Error inserting profile:', profileError.message)
-      return
-    }
+  if (profileError) {
+    console.error('Error inserting profile:', profileError.message)
+    return
+  }
   
     console.log('User signed up successfully!')
 

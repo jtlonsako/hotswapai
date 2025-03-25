@@ -30,7 +30,7 @@ export function ConversationHistory() {
         const fetchConversations = async () => {
             if(userId && userId !== '') {
                 const dbConversations = await pullUserConversationsByModel(modelName, userId);
-                let conversationGroupData = {};
+                let conversationGroupData: Record<string, JSX.Element[]> = {};
                 dbConversations.forEach((conversation) => {
                     const timediff = getTimeDiff(conversation.date_time);
                     if(conversationGroupData[timediff] === undefined) conversationGroupData[timediff] = [];
@@ -45,18 +45,54 @@ export function ConversationHistory() {
                     ];
                 });
     
-                const conversationGroups = []
-    
-                for(const key in conversationGroupData) {
-                    conversationGroups.push(
-                        <SidebarGroup key={key}>
-                            <SidebarGroupLabel className="text-zinc-400">{key}</SidebarGroupLabel>
-                            <SidebarGroupContent>
-                                {conversationGroupData[key]}
-                            </SidebarGroupContent>
-                        </SidebarGroup>
-                    )
-                }
+                const conversationGroups: JSX.Element[] = [];
+                
+                // Define the order of time groups
+                const timeOrder = [
+                    'Today', 
+                    'Yesterday', 
+                    'This Week', 
+                    'Last week', 
+                    '2 Weeks', 
+                    '3 Weeks', 
+                    'This Month'
+                ];
+                
+                // First add the predefined time groups in order
+                timeOrder.forEach(timeGroup => {
+                    if (conversationGroupData[timeGroup]) {
+                        conversationGroups.push(
+                            <SidebarGroup key={timeGroup}>
+                                <SidebarGroupLabel className="text-zinc-400">{timeGroup}</SidebarGroupLabel>
+                                <SidebarGroupContent>
+                                    {conversationGroupData[timeGroup]}
+                                </SidebarGroupContent>
+                            </SidebarGroup>
+                        );
+                    }
+                });
+                
+                // Then add any remaining month groups (sorted numerically)
+                const monthGroups = Object.keys(conversationGroupData)
+                    .filter(key => key.includes('Month') || key.includes('Months'))
+                    .sort((a, b) => {
+                        const numA = parseInt(a.split(' ')[0]) || 1;
+                        const numB = parseInt(b.split(' ')[0]) || 1;
+                        return numA - numB;
+                    });
+                
+                monthGroups.forEach(key => {
+                    if (!timeOrder.includes(key)) {
+                        conversationGroups.push(
+                            <SidebarGroup key={key}>
+                                <SidebarGroupLabel className="text-zinc-400">{key}</SidebarGroupLabel>
+                                <SidebarGroupContent>
+                                    {conversationGroupData[key]}
+                                </SidebarGroupContent>
+                            </SidebarGroup>
+                        );
+                    }
+                });
     
                 setConversations(conversationGroups);
             }
