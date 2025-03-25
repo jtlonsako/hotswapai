@@ -2,108 +2,104 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { createDeepSeek } from '@ai-sdk/deepseek';
 import { createAnthropic } from '@ai-sdk/anthropic'
 import { createGoogleGenerativeAI} from '@ai-sdk/google';
-import { streamText, convertToCoreMessages, LanguageModelV1 } from 'ai';
+import { streamText, convertToCoreMessages, wrapLanguageModel, extractReasoningMiddleware } from 'ai';
 import { getApiSecret, saveMessage } from '@/db/queries';
-import { NextResponse } from 'next/server';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
- const { messages, modelData } = await req.json();
- const conversationId = modelData.conversationId;
- const coreMessages = convertToCoreMessages(messages);
- const model = await selectModel(modelData, modelData.userId)
- const result = await streamText({
-   model: model,
-   messages: coreMessages,
-   onFinish: async ({ responseMessages }) => {
-     try {
-       await saveMessage({
-         message: responseMessages[0].content[0].text,
-         role: responseMessages[0].role,
-         conversationId: conversationId,
-         modelName: modelData.modelName,
-         userId: modelData.userId
-       });
-     } catch (error) {
-       console.error("Failed to save chat: ", error);
-     }
-   }
- });
- return result.toDataStreamResponse({
-   sendReasoning: true,
- });
+  const { messages, modelData } = await req.json();
+  const conversationId = modelData.conversationId;
+  let coreMessages = convertToCoreMessages(messages);
+  
+  // If using Deepseek, ensure messages alternate between user and assistant
+  if (modelData.modelFamily.toLowerCase() === 'deepseek' && 
+      modelData.modelName === "deepseek-reasoner") {
+    coreMessages = ensureAlternatingMessages(coreMessages);
+  }
+  
+  let model = await selectModel(modelData, modelData.userId);
+  
+  // Apply middleware for DeepSeek Reasoner model
+  if (modelData.modelFamily.toLowerCase() === 'deepseek' && 
+      modelData.modelName === "deepseek-reasoner") {
+    model = wrapLanguageModel({
+      model: model,
+      middleware: extractReasoningMiddleware({ tagName: 'think' }),
+    });
+  }
+  
+  const result = await streamText({
+    model: model,
+    messages: coreMessages,
+    onFinish: async (result) => {
+      try {
+        let messageText = '';
+        let role = 'assistant'; // default role
+        if (result.text) messageText = result.text;
+        if (messageText) {
+          await saveMessage({
+            message: messageText,
+            role: role,
+            conversationId: conversationId,
+            modelName: modelData.modelName,
+            userId: modelData.userId
+          });
+        } else {
+          console.error("No message text to save.");
+        }
+      } catch (error) {
+        console.error("Failed to save chat:", error);
+      }
+    }
+  });
+  
+  // For DeepSeek Reasoner, we need to send the reasoning
+  if (modelData.modelFamily.toLowerCase() === 'deepseek' && 
+      modelData.modelName === "deepseek-reasoner") {
+    return result.toDataStreamResponse({
+      sendReasoning: false,
+    });
+  }
+  
+  // For other models, use the standard response
+  return result.toDataStreamResponse({
+    sendReasoning: false,
+  });
 }
 
-// export async function POST(request: Request) {
-//   try {
-//     const { messages } = await request.json();
-
-//     const result = streamText({
-//       model: enhancedDeepSeekModel,
-//       messages,
-//       onError: (error) => {
-//         console.error('Streaming error:', error);
-//       },
-//     });
-
-//     return (await result).toDataStreamResponse({
-//       sendReasoning: true, // Ensures reasoning tokens are included
-//     });
-//   } catch (error) {
-//     console.error('API Route Error:', error);
-//     return new NextResponse('Internal Server Error', { status: 500 });
-//   }
-// }
-
-//export async function POST(request: Request) {
-//  const { messages, modelData } = await request.json();
-//  const conversationId = modelData.conversationId;
-//  const coreMessages = convertToCoreMessages(messages);
-//  const model = await selectModel(modelData, modelData.userId)
-//  try {
-//    const result = streamText({
-//      model: model,
-//      messages: coreMessages,
-//      onError: (error) => {
-//        console.error('Streaming error:', error);
-//      },
-//    });
-//
-//    const readableStream = new ReadableStream({
-//      async start(controller) {
-//        try {
-//          for await (const chunk of result.textStream) {
-//            if (chunk.type === 'text') {
-//              controller.enqueue(new TextEncoder().encode(chunk.value));
-//            } else if (chunk.type === 'reasoning') {
-//              // Handle the reasoning chunk as needed
-//              console.log('Reasoning:', chunk.value);
-//              // You can choose to enqueue it or ignore based on your requirements
-//              // For example, to ignore:
-//              // continue;
-//              // Or to include it in the response:
-//              controller.enqueue(new TextEncoder().encode(`Reasoning: ${chunk.value}`));
-//            }
-//            // Handle other chunk types if necessary
-//          }
-//          controller.close();
-//        } catch (err) {
-//          console.error('Stream processing error:', err);
-//          controller.error(err);
-//        }
-//      },
-//    });
-//
-//    return new NextResponse(readableStream, {
-//      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-//    });
-//  } catch (error) {
-//    console.error('API Route Error:', error);
-//    return new NextResponse('Internal Server Error', { status: 500 });
-//  }
-//}
+// Function to ensure messages alternate between user and assistant
+function ensureAlternatingMessages(messages) {
+  if (messages.length <= 1) return messages;
+  
+  const result = [messages[0]];
+  
+  for (let i = 1; i < messages.length; i++) {
+    const prevRole = result[result.length - 1].role;
+    const currentMessage = messages[i];
+    
+    // If current message has same role as previous, skip it
+    if (currentMessage.role === prevRole) {
+      continue;
+    }
+    
+    result.push(currentMessage);
+  }
+  
+  // Ensure the last message is from the user so the AI can respond
+  if (result[result.length - 1].role !== 'user') {
+    // Find the last user message
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === 'user') {
+        result[result.length - 1] = messages[i];
+        break;
+      }
+    }
+  }
+  
+  return result;
+}
 
 async function selectModel(modelDetails: {modelFamily: string, modelName: string}, userId: string) {
   let model;
@@ -120,7 +116,13 @@ async function selectModel(modelDetails: {modelFamily: string, modelName: string
   else if(modelDetails.modelFamily.toLowerCase() === 'google'){
     const secretKey = await getApiSecret(userId, 'google');
     const google = createGoogleGenerativeAI({apiKey: secretKey.value})
-    model = google(modelDetails.modelName);
+    model = google(modelDetails.modelName, {
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' }
+      ],
+    });
   }
   else if(modelDetails.modelFamily.toLowerCase() === 'deepseek'){
     const secretKey = await getApiSecret(userId, 'deepseek');
