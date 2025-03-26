@@ -13,6 +13,9 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { useState } from "react"
+import { useToast } from "@/hooks/use-toast"
+
 const formSchema = z.object({
     firstname: z.string().min(1).max(50),
     lastname: z.string().min(1).max(50),
@@ -20,7 +23,10 @@ const formSchema = z.object({
     password: z.string().min(6).max(50)
   })
 
-export function SignupComponent() {
+export function SignupComponent({ onSuccessfulSignup }: { onSuccessfulSignup: () => void }) {
+    const [isLoading, setIsLoading] = useState(false);
+    const { toast } = useToast();
+    
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -31,10 +37,33 @@ export function SignupComponent() {
         },
       })
 
-      function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        signup(values);
+      async function onSubmit(values: z.infer<typeof formSchema>) {
+        setIsLoading(true);
+        try {
+          const result = await signup(values);
+          if (result.success) {
+            toast({
+              title: "Account Created Successfully",
+              description: "Please check your email to verify your account before logging in.",
+              variant: "default",
+            });
+            onSuccessfulSignup(); //Set home page back to signup
+          } else {
+            toast({
+              title: "Signup Failed",
+              description: result.error || "There was an error creating your account. Please try again.",
+              variant: "destructive",
+            });
+          }
+        } catch (error) {
+          toast({
+            title: "Signup Error",
+            description: error.message || "An unexpected error occurred.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsLoading(false);
+        }
       }
 
     return(
@@ -104,7 +133,16 @@ export function SignupComponent() {
                         </FormItem>
                     )}
                 />  
-                <Button type="submit" className="w-full mt-4">Sign Up</Button>
+                <Button type="submit" className="w-full mt-4" disabled={isLoading}>
+                    {isLoading ? (
+                        <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                            Signing Up...
+                        </>
+                    ) : (
+                        "Sign Up"
+                    )}
+                </Button>
             </form>
         </Form>
     )

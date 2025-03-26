@@ -11,7 +11,7 @@ import { ConversationHistory } from "./ConversationHistory";
 
   export function AppSidebar() {
     return (
-      <Sidebar className="bg-zinc-900">
+      <Sidebar className="bg-zinc-900 z-30">
         <SidebarHeader />
         <SidebarContent>
           <SidebarGroup>
@@ -25,4 +25,3 @@ import { ConversationHistory } from "./ConversationHistory";
       </Sidebar>
     )
   }
-  
