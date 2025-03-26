@@ -8,15 +8,19 @@ import { SignupComponent } from "@/components/SignupComponent";
 
 export default function HomePage() {
   const [signingIn, setSigningIn] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const supabase = createClient();
 
   useEffect(() => {
     const isLoggedIn = async () => {
-
-      const { data } = await supabase.auth.getUser();
-      if(data?.user) {
-        redirect('/chat');
+      try {
+        const { data } = await supabase.auth.getUser();
+        if(data?.user) {
+          redirect('/chat');
+        }
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -25,6 +29,17 @@ export default function HomePage() {
 
   function loginOrSignup(option: boolean) {
     setSigningIn(option);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="w-screen h-screen grid place-content-center">
+        <div className="flex flex-col items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mb-4"></div>
+          <p className="text-white text-xl">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -36,7 +51,7 @@ export default function HomePage() {
                 {signingIn ? (
                   <LoginComponent />
                 ) : (
-                  <SignupComponent />
+                  <SignupComponent onSuccessfulSignup={() => loginOrSignup(true)} />
                 )}
                 <button className="mt-3 text-blue-300 hover:text-blue-100" onClick={() => loginOrSignup(!signingIn)}>
                   {signingIn ? (

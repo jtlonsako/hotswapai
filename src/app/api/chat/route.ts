@@ -66,6 +66,7 @@ export async function POST(req: Request) {
   // For other models, use the standard response
   return result.toDataStreamResponse({
     sendReasoning: false,
+    getErrorMessage: errorHandler,
   });
 }
 
@@ -132,4 +133,20 @@ async function selectModel(modelDetails: {modelFamily: string, modelName: string
   //Note: THIS IS CURRENTLY SOOOO BREAKABLE!!!!
 
   return model
+}
+
+function errorHandler(error: unknown) {
+  if (error == null) {
+    return 'unknown error';
+  }
+
+  if (typeof error === 'string') {
+    return error;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return JSON.stringify(error);
 }

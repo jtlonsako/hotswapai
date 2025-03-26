@@ -64,6 +64,7 @@ export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModel
     const [modelDisplay, setModelDisplay] = useState<Element[]>([<li key="0"></li>])
     const [providersDisplay, setProvidersDisplay] = useState<Element[]>([<li key="0"></li>]);
     const [loading, setLoading] = useState(true);
+    const [loadingModels, setLoadingModels] = useState(false);
     const setConversationId = useConversationStore((state) => state.setConversationId)
     const modelName = useModelStore((state) => state.modelName);
     const setModelName = useModelStore((state) => state.setModelName);
@@ -84,10 +85,12 @@ export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModel
 
     useEffect(() => {
         const getModelList = async () => {
+            setLoadingModels(true); // Set loading models to true
             const currentProviderId = providers.filter((provider) => provider.company === modelFamily)[0]?.id;
             const modelList = await getModelsByProvider(currentProviderId);
             console.log(modelList);
             setModels(modelList);
+            setLoadingModels(false); // Set loading models to false after fetching
         }
 
         getModelList();
@@ -195,8 +198,13 @@ export function ModelSelector({modelFamily, displayName, isSidebarOpen, setModel
                                     </CarouselItem>
                                     <CarouselItem>
                                         <ul className="w-full border border-zinc-600 rounded-lg bg-[#2b2b2b]">
-                                            {/* {modelNameList} */}
-                                            {modelDisplay}
+                                            {loadingModels ? (
+                                                <div className="flex justify-center items-center py-4">
+                                                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+                                                </div>
+                                            ) : (
+                                                modelDisplay
+                                            )}
                                         </ul>
                                     </CarouselItem>
                                 </CarouselContent>
