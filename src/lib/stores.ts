@@ -8,7 +8,7 @@ type ConversationData = {
 type ModelData = {
   modelFamily: string,
   modelName: string,
-  setModelFamily: (family: string) => void
+  setCurrentProvider: (family: string) => void
   setModelName: (name: string) => void
 }
 
@@ -19,8 +19,8 @@ export const useConversationStore = create<ConversationData>((set) => ({
 );
 
 export const useModelStore = create<ModelData>((set) => ({
-  modelFamily: 'OpenAI',
-  modelName: 'gpt-4o-mini',
-  setModelFamily: (family: string) => set(() => ({ modelFamily: family })),
+  modelFamily: '',
+  modelName: '',
+  setCurrentProvider: (family: string) => set(() => ({ modelFamily: family })),
   setModelName: (name: string) => set(() => ({ modelName: name })),
 }))

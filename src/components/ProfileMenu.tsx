@@ -42,8 +42,8 @@ export function ProfileMenu() {
 
             setUserId(data.user!.id)
             const loadedUserInfo = await getUserInfo(data.user!.id);
-            const initials = loadedUserInfo[0].first_name.charAt(0) + loadedUserInfo[0].last_name.charAt(0);
-            setUserInfo({firstName: loadedUserInfo[0].first_name, lastName: loadedUserInfo[0].last_name, initials});
+            const initials = loadedUserInfo[0].firstName.charAt(0) + loadedUserInfo[0].lastName.charAt(0);
+            setUserInfo({firstName: loadedUserInfo[0].firstName, lastName: loadedUserInfo[0].lastName, initials});
           } catch (error) {
             console.error("Error loading user info:", error);
           } finally {
