@@ -32,14 +32,14 @@ export function ConversationHistory() {
                 const dbConversations = await pullUserConversationsByModel(modelName, userId);
                 let conversationGroupData: Record<string, JSX.Element[]> = {};
                 dbConversations.forEach((conversation) => {
-                    const timediff = getTimeDiff(conversation.date_time);
+                    const timediff = getTimeDiff(conversation.dateTime);
                     if(conversationGroupData[timediff] === undefined) conversationGroupData[timediff] = [];
                     conversationGroupData[timediff] = [...conversationGroupData[timediff], 
                         <SidebarMenuItem key={conversation.id}>
                            <ConversationTab 
                             summary={conversation.summary} 
                             conversationId={conversation.id} 
-                            date_time={conversation.date_time}
+                            date_time={conversation.dateTime}
                           />
                         </SidebarMenuItem>
                     ];
@@ -93,7 +93,6 @@ export function ConversationHistory() {
                         );
                     }
                 });
-    
                 setConversations(conversationGroups);
             }
         }

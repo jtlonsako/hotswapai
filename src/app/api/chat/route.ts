@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   let coreMessages = convertToCoreMessages(messages);
   
   // If using Deepseek, ensure messages alternate between user and assistant
-  if (modelData.modelFamily.toLowerCase() === 'deepseek' && 
+  if (modelData.currentProvider.toLowerCase() === 'deepseek' && 
       modelData.modelName === "deepseek-reasoner") {
     coreMessages = ensureAlternatingMessages(coreMessages);
   }
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   let model = await selectModel(modelData, modelData.userId);
   
   // Apply middleware for DeepSeek Reasoner model
-  if (modelData.modelFamily.toLowerCase() === 'deepseek' && 
+  if (modelData.currentProvider.toLowerCase() === 'deepseek' && 
       modelData.modelName === "deepseek-reasoner") {
     model = wrapLanguageModel({
       model: model,
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
   });
   
   // For DeepSeek Reasoner, we need to send the reasoning
-  if (modelData.modelFamily.toLowerCase() === 'deepseek' && 
+  if (modelData.currentProvider.toLowerCase() === 'deepseek' && 
       modelData.modelName === "deepseek-reasoner") {
     return result.toDataStreamResponse({
       sendReasoning: false,
@@ -102,19 +102,19 @@ function ensureAlternatingMessages(messages) {
   return result;
 }
 
-async function selectModel(modelDetails: {modelFamily: string, modelName: string}, userId: string) {
+async function selectModel(modelDetails: {currentProvider: string, modelName: string}, userId: string) {
   let model;
-  if(modelDetails.modelFamily.toLowerCase() === 'anthropic'){ 
+  if(modelDetails.currentProvider.toLowerCase() === 'anthropic'){ 
     const secretKey = await getApiSecret(userId, 'anthropic');
     const anthropic = createAnthropic({apiKey: secretKey.value});
     model = anthropic(modelDetails.modelName);
   }
-  else if(modelDetails.modelFamily.toLowerCase() === 'openai'){
+  else if(modelDetails.currentProvider.toLowerCase() === 'openai'){
     const secretKey = await getApiSecret(userId, 'openai');
     const openai = createOpenAI({apiKey: secretKey.value});
     model = openai(modelDetails.modelName)
     }
-  else if(modelDetails.modelFamily.toLowerCase() === 'google'){
+  else if(modelDetails.currentProvider.toLowerCase() === 'google'){
     const secretKey = await getApiSecret(userId, 'google');
     const google = createGoogleGenerativeAI({apiKey: secretKey.value})
     model = google(modelDetails.modelName, {
@@ -125,7 +125,7 @@ async function selectModel(modelDetails: {modelFamily: string, modelName: string
       ],
     });
   }
-  else if(modelDetails.modelFamily.toLowerCase() === 'deepseek'){
+  else if(modelDetails.currentProvider.toLowerCase() === 'deepseek'){
     const secretKey = await getApiSecret(userId, 'deepseek');
     const deepseek = createDeepSeek({apiKey: secretKey.value});
     model = deepseek(modelDetails.modelName);

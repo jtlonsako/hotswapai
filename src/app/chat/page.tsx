@@ -18,8 +18,8 @@ import { ProfileMenu } from '@/components/ProfileMenu';
 import { useToast } from '@/hooks/use-toast';
 
 export default function Chat() {
-  const [displayName, setDisplayName] = useState('GPT-4o mini ($)')
-  const [modelFamily, setModelFamily] = useState('OpenAI');
+  const [displayName, setDisplayName] = useState('')
+  const [currentProvider, setCurrentProvider] = useState('');
   const [messagesUpdate, setMessagesUpdate] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userId, setUserId] = useState<string>('');
@@ -31,7 +31,7 @@ export default function Chat() {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     body: {
       modelData: {
-        modelFamily: modelFamily,
+        currentProvider: currentProvider,
         modelName: modelName,
         conversationId: conversationId,
         userId: userId
@@ -111,10 +111,11 @@ export default function Chat() {
         <div className={`sm:ml-5 mt-2 flex-1 transition-all duration-300`}>
           <ModelSelector
             displayName={displayName}
-            modelFamily={modelFamily}
+            currentProvider={currentProvider}
             isSidebarOpen={isSidebarOpen}
             setDisplayName={setDisplayName}
-            setModelFamily={setModelFamily}
+            setCurrentProvider={setCurrentProvider}
+            userId={userId}
           />
         </div>
         <div className='mr-8 mt-5'>
