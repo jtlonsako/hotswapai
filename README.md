@@ -4,7 +4,7 @@
 HowswapAI is a simple and intuitive web app built for the purpose of allowing you to easily use a variety of AI models
 without having to pay a subscription fee. All you have to do is bring your own API keys for each AI provider (Anthropic, Google Cloud, OpenAI) and you will instantly be able to use leading models from each provider.
 
-### NOTE: The app is in an early-alpha stage: to be honest it's currently just something I quickly built for myself, I am in the process of making it more viable for mass-consumption
+### NOTE: The app is in an early-alpha stage: to be honest it's currently just something I quickly built for myself
 
 ## Requirements:
 - Node (Version 18.18+)
